@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Zile Zhao</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Zile Zhao — M.S. student in Research and Experimental Psychology at Wake Forest University. Visual attention, learned distractor suppression, anxiety, eye tracking.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Serif+SC:wght@500;600&family=Noto+Sans+SC:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky identity column on the left, one reading column on the right; stacks on phones.
+   The one bold element is a visual-search display (the subject's own stimulus) in the intro.
+   Language: English by default; every translatable element carries its Chinese in data-zh. */
+:root {
+  --paper: #f6f7f6;
+  --surface: #ffffff;
+  --ink: #18212b;
+  --muted: #5b6672;
+  --rule: #dce1e3;
+  --link: #1d5b86;
+  --singleton: #c8336f;   /* the salient color distractor */
+  --target: #18212b;
+  --gaze: #1d5b86;
+  --chip: #eaeef0;
+
+  --display: "Newsreader", "Noto Serif SC", "Songti SC", "Iowan Old Style", Georgia, serif;
+  --body: "Public Sans", "Noto Sans SC", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", "Noto Sans SC", ui-monospace, Menlo, monospace;
+
+  --step--1: 0.8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: 1.5rem;
+  --step-3: 2.25rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12171c; --surface: #182027; --ink: #e5e9ec; --muted: #9aa5af;
+    --rule: #2a343d; --link: #86b9e0; --singleton: #f0679b; --target: #e5e9ec;
+    --gaze: #86b9e0; --chip: #1f2830; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12171c; --surface: #182027; --ink: #e5e9ec; --muted: #9aa5af;
+  --rule: #2a343d; --link: #86b9e0; --singleton: #f0679b; --target: #e5e9ec;
+  --gaze: #86b9e0; --chip: #1f2830; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; border-radius: 2px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 500; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-block: 56px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 64px;
+}
+
+/* ---------- identity column ---------- */
+.id {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 40px);
+  align-self: start;
+  display: grid;
+  gap: 22px;
+}
+.id-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.portrait {
+  width: 120px; height: 120px; max-width: 100%; border-radius: 50%;
+  object-fit: cover; display: block;
+  background: var(--chip);
+  border: 1px solid var(--rule);
+}
+.lang-toggle {
+  font: 500 0.8125rem/1 var(--body);
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink);
+  padding: 7px 12px; border-radius: 999px; cursor: pointer;
+}
+.lang-toggle:hover { border-color: var(--muted); }
+.id h1 { font-size: var(--step-3); line-height: 1.05; letter-spacing: -0.01em; }
+.id .role { color: var(--muted); font-size: 0.9375rem; line-height: 1.5; }
+.id .role strong { color: var(--ink); font-weight: 500; display: block; }
+.contact { display: grid; gap: 8px; font-size: 0.9375rem; }
+.email-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.email { font-family: var(--mono); font-size: var(--step--1); user-select: all; word-break: break-all; }
+.copy {
+  font: 500 0.75rem/1 var(--body); letter-spacing: 0.02em;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--muted);
+  padding: 5px 8px; border-radius: 4px; cursor: pointer;
+}
+.copy:hover { color: var(--ink); border-color: var(--muted); }
+.toc { display: grid; gap: 2px; border-top: 1px solid var(--rule); padding-top: 18px; }
+.toc a {
+  color: var(--muted); text-decoration: none; font-size: 0.9375rem; padding: 3px 0;
+}
+.toc a:hover { color: var(--ink); }
+
+/* ---------- main column ---------- */
+main { display: grid; gap: 72px; min-width: 0; }
+section { display: grid; gap: 24px; scroll-margin-top: 32px; }
+.label {
+  font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--muted);
+}
+section > h2 { font-size: var(--step-2); }
+.prose { max-width: 64ch; display: grid; gap: 14px; font-size: 1.0625rem; }
+
+/* intro with search display */
+.intro { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 48px; align-items: start; }
+.intro .lede { font-family: var(--display); font-size: 1.625rem; line-height: 1.3; max-width: 30ch; }
+.figure { display: grid; gap: 10px; margin: 0; }
+.figure svg { width: 100%; max-width: 240px; height: auto; display: block; }
+.figure figcaption { font-size: var(--step--1); color: var(--muted); line-height: 1.5; }
+.figure figcaption b { color: var(--singleton); font-weight: 600; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+.chips li {
+  font-size: 0.8125rem; padding: 4px 10px; border-radius: 999px;
+  background: var(--chip); color: var(--ink);
+}
+
+/* search display drawing */
+.item { fill: none; stroke: var(--muted); stroke-width: 2; }
+.item.target { stroke: var(--target); }
+.item.distractor { stroke: var(--singleton); stroke-width: 2.5; }
+.bar { stroke: var(--muted); stroke-width: 2; stroke-linecap: round; }
+.bar.t { stroke: var(--target); }
+.bar.d { stroke: var(--singleton); }
+.fix { stroke: var(--ink); stroke-width: 1.5; }
+.gaze-line { stroke: var(--gaze); stroke-width: 1.5; fill: none; stroke-dasharray: 3 4; }
+.gaze-dot { fill: var(--gaze); opacity: 0.85; }
+.ghost { stroke: var(--singleton); stroke-width: 1; fill: none; stroke-dasharray: 1 5; opacity: 0.55; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .gaze-dot { animation: saccade 4.2s cubic-bezier(.6,0,.2,1) infinite; }
+  @keyframes saccade {
+    0%, 30%   { transform: translate(0px, 0px); }
+    38%, 92%  { transform: translate(56px, -56px); }
+    100%      { transform: translate(0px, 0px); }
+  }
+}
+
+/* news */
+.news { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; max-width: 70ch; }
+.news li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 16px; }
+.date { font-family: var(--mono); font-size: var(--step--1); color: var(--muted); font-variant-numeric: tabular-nums; padding-top: 2px; }
+
+/* projects */
+.project {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 28px;
+  display: grid;
+  gap: 18px;
+}
+.project-head { display: grid; gap: 8px; }
+.project h3 { font-size: var(--step-1); line-height: 1.3; font-weight: 600; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: var(--step--1); color: var(--muted); }
+.status {
+  font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 3px; border: 1px solid currentColor;
+}
+.status.live { color: var(--link); }
+.project .prose { font-size: var(--step-0); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.tags li { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); border: 1px solid var(--rule); padding: 2px 8px; border-radius: 3px; }
+
+/* block design strip */
+.blocks { display: grid; gap: 8px; }
+.strip { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; }
+.cell {
+  height: 34px; border-radius: 3px; display: grid; place-items: center;
+  font-family: var(--mono); font-size: 0.6875rem; font-variant-numeric: tabular-nums;
+  background: var(--chip); color: var(--muted);
+}
+.cell.threat { background: color-mix(in srgb, var(--singleton) 14%, var(--surface)); color: var(--ink); }
+.cell.key { outline: 2px solid var(--ink); outline-offset: -2px; color: var(--ink); font-weight: 500; }
+.strip-legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; font-size: 0.75rem; color: var(--muted); }
+.strip-legend span:last-child { color: var(--ink); }
+
+/* pipeline */
+.pipeline { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; counter-reset: step; }
+.pipeline li {
+  counter-increment: step; background: var(--chip); padding: 10px 12px; border-radius: 3px;
+  font-size: 0.8125rem; line-height: 1.4; display: grid; gap: 2px; align-content: start;
+}
+.pipeline li::before { content: counter(step); font-family: var(--mono); font-size: 0.6875rem; color: var(--muted); }
+.pipeline b { font-weight: 600; display: block; }
+.pipeline.trial li { font-variant-numeric: tabular-nums; }
+.pipeline.trial li::before { content: none; }
+
+/* PCK chart */
+.chart-fig { margin: 0; display: grid; gap: 10px; border-top: 1px solid var(--rule); padding-top: 18px; }
+.chart-head { display: grid; gap: 2px; }
+.chart-title { font-weight: 600; font-size: 0.9375rem; }
+.chart-sub { font-size: 0.75rem; color: var(--muted); font-family: var(--mono); }
+.chart { position: relative; max-width: 560px; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart .grid line { stroke: var(--rule); stroke-width: 1; }
+.chart .baseline { stroke: var(--muted); stroke-width: 1; }
+.chart text { fill: var(--muted); font-family: var(--mono); font-size: 10px; font-variant-numeric: tabular-nums; }
+.chart .ytick text { text-anchor: end; }
+.chart .xtick text { text-anchor: middle; }
+.chart .series { fill: none; stroke: var(--link); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .pt { fill: var(--link); stroke: var(--surface); stroke-width: 2; }
+.chart .pt.on { r: 6; }
+.chart .hit { fill: transparent; cursor: default; }
+.chart .hit:focus { outline: none; }
+.chart .hit:focus-visible + .pt, .chart .pt.on { stroke: var(--ink); }
+.chart .axis-title { fill: var(--ink); font-family: var(--body); font-size: 11px; font-weight: 500; }
+.chart .end-label { fill: var(--ink); font-weight: 500; font-size: 11px; }
+.tip {
+  position: absolute; pointer-events: none; transform: translate(-50%, calc(-100% - 12px));
+  background: var(--ink); color: var(--paper); font-size: 0.75rem; line-height: 1.45;
+  padding: 6px 9px; border-radius: 4px; white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+.tip[hidden] { display: none; }
+.chart-note { font-size: var(--step--1); color: var(--muted); max-width: 66ch; }
+.table-wrap { overflow-x: auto; margin-top: 8px; }
+.chart-data table { border-collapse: collapse; font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
+.chart-data th, .chart-data td { padding: 4px 14px 4px 0; text-align: right; border-bottom: 1px solid var(--rule); }
+.chart-data th:first-child, .chart-data td:first-child { text-align: left; }
+.chart-data th { font-weight: 600; color: var(--muted); }
+
+/* publications */
+.pubs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+.pub { display: grid; gap: 6px; padding: 18px 0; border-top: 1px solid var(--rule); }
+.pub:last-child { border-bottom: 1px solid var(--rule); }
+.pub-title { font-family: var(--display); font-size: 1.1875rem; line-height: 1.35; font-weight: 500; max-width: 62ch; }
+.pub-venue { font-size: 0.9375rem; color: var(--muted); }
+.pub-venue i { color: var(--ink); }
+.pub-tags { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.pill {
+  font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 3px; background: var(--chip); color: var(--muted);
+}
+.pill.pub-ok { color: var(--link); background: color-mix(in srgb, var(--link) 12%, var(--surface)); }
+.pill.first { color: var(--ink); }
+.pub a { font-size: var(--step--1); font-family: var(--mono); }
+
+.authors { font-size: 0.9375rem; color: var(--muted); max-width: 66ch; }
+.authors b { color: var(--ink); font-weight: 600; }
+.abstract { max-width: 66ch; }
+.abstract summary {
+  cursor: pointer; font-size: var(--step--1); color: var(--link); width: fit-content;
+  list-style: none; display: inline-flex; align-items: center; gap: 6px;
+}
+.abstract summary::-webkit-details-marker { display: none; }
+.abstract summary::before { content: "+"; font-family: var(--mono); width: 1ch; }
+.abstract[open] summary::before { content: "−"; }
+.abstract p { margin-top: 10px; font-size: 0.9375rem; line-height: 1.65; }
+
+/* poster */
+.poster { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 28px; align-items: start; }
+.poster-thumb {
+  display: block; padding: 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface);
+  cursor: zoom-in; overflow: hidden;
+}
+.poster-thumb img { display: block; width: 100%; height: auto; }
+.poster-body { display: grid; gap: 8px; min-width: 0; }
+.poster-body h3 { font-size: var(--step-1); line-height: 1.3; font-weight: 500; }
+.affil { font-size: var(--step--1); color: var(--muted); line-height: 1.5; }
+.lightbox {
+  position: fixed; inset: 0; z-index: 10; background: color-mix(in srgb, var(--paper) 30%, #000 70%);
+  display: grid; place-items: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) max(16px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 16px) max(16px, env(safe-area-inset-left, 0px));
+  overflow: auto;
+}
+.lightbox[hidden] { display: none; }
+.lightbox img { max-width: 100%; max-height: 100%; height: auto; border-radius: 3px; background: #fff; }
+.lightbox-close {
+  position: fixed; top: calc(env(safe-area-inset-top, 0px) + 14px); right: max(14px, env(safe-area-inset-right, 0px));
+  font: 500 0.875rem/1 var(--body); padding: 9px 14px; border-radius: 999px; border: 0;
+  background: var(--surface); color: var(--ink); cursor: pointer;
+}
+
+/* timeline lists (experience, education) */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; }
+.timeline li { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 20px; }
+.timeline h3 { font-family: var(--body); font-size: var(--step-0); font-weight: 600; line-height: 1.4; }
+.where { color: var(--muted); font-size: 0.9375rem; }
+.timeline ul { margin: 8px 0 0; padding-left: 18px; display: grid; gap: 4px; font-size: 0.9375rem; max-width: 66ch; }
+.timeline ul li { display: list-item; }
+
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.kv { display: grid; gap: 14px; margin: 0; }
+.kv dt { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.kv dd { margin: 4px 0 0; font-size: 0.9375rem; }
+
+footer { font-size: var(--step--1); color: var(--muted); border-top: 1px solid var(--rule); padding-top: 20px; }
+
+/* Chinese: CJK needs a little more leading and no tracking on labels */
+:root:lang(zh) body { line-height: 1.75; }
+:root:lang(zh) .label, :root:lang(zh) .kv dt, :root:lang(zh) .status, :root:lang(zh) .pill { letter-spacing: 0.02em; }
+:root:lang(zh) .intro .lede { line-height: 1.45; }
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 880px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 40px; padding-block: 32px 56px; }
+  .id { position: static; }
+  .toc { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .intro { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+}
+@media (max-width: 560px) {
+  main { gap: 56px; }
+  .project { padding: 20px; }
+  .timeline li, .news li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .two { grid-template-columns: minmax(0, 1fr); }
+  .poster { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .cell { height: 28px; font-size: 0.625rem; }
+  .intro .lede { font-size: 1.375rem; }
+}
+</style>
+
+<div class="wrap">
+
+  <aside class="id">
+    <div class="id-top">
+      <img class="portrait" src="photo.jpg" alt="Portrait of Zile Zhao" data-zh-alt="Zile Zhao 的照片" width="120" height="120">
+      <button class="lang-toggle" id="lang-toggle" type="button" lang="zh" aria-label="切换到中文">中文</button>
+    </div>
+    <h1>Zile Zhao</h1>
+    <p class="role" data-zh="<strong>实验与研究心理学硕士在读</strong>维克森林大学（Wake Forest University）<br>SLAP Lab（导师：Brad Stilwell 博士）">
+      <strong>M.S. Student, Research &amp; Experimental Psychology</strong>
+      Wake Forest University<br>SLAP Lab (Dr. Brad Stilwell)
+    </p>
+    <div class="contact">
+      <div class="email-row">
+        <span class="email" id="email-wfu">zhaoz26@wfu.edu</span>
+        <button class="copy" data-copy="email-wfu" type="button" data-zh="复制">Copy</button>
+      </div>
+      <div class="email-row">
+        <span class="email" id="email-personal">zilezhao728@gmail.com</span>
+        <button class="copy" data-copy="email-personal" type="button" data-zh="复制">Copy</button>
+      </div>
+      <span class="where" data-zh="美国北卡罗来纳州温斯顿-塞勒姆">Winston-Salem, NC</span>
+    </div>
+    <nav class="toc" aria-label="Sections">
+      <a href="#about" data-zh="关于我">About</a>
+      <a href="#projects" data-zh="当前项目">Current projects</a>
+      <a href="#publications" data-zh="发表论文">Publications</a>
+      <a href="#posters" data-zh="学术海报">Posters</a>
+      <a href="#experience" data-zh="研究经历">Research experience</a>
+      <a href="#teaching" data-zh="教学">Teaching</a>
+      <a href="#education" data-zh="教育背景">Education</a>
+      <a href="#skills" data-zh="技能">Skills</a>
+    </nav>
+  </aside>
+
+  <main>
+
+    <section id="about">
+      <div class="intro">
+        <div class="prose">
+          <p class="lede" data-zh="我研究人如何学会忽略干扰，以及这种学习在威胁之下会发生什么变化。">I study how people learn to ignore distractions, and what happens to that learning under threat.</p>
+          <p data-zh="我目前在维克森林大学攻读实验与研究心理学硕士，在 Brad Stilwell 博士的 SLAP Lab 做研究。我现在的工作用眼动追踪来探究：焦虑是否会破坏<em>习得性干扰抑制</em>，也就是人在得知某个显眼的刺激与任务无关之后，学会不再去看它的能力。">I am a master's student in Research and Experimental Psychology at Wake Forest University, working in Dr. Brad Stilwell's SLAP Lab. My current work uses eye tracking to ask whether anxiety disrupts <em>learned distractor suppression</em>: the ability to stop looking at a salient item once you have learned it is irrelevant.</p>
+          <p data-zh="来维克森林之前，我在伊利诺伊大学厄巴纳-香槟分校获得心理学学士学位（行为与认知神经科学方向）。期间我在哈佛医学院 Schepens 眼科研究所研究视网膜神经节细胞的退化，在伊利诺伊大学做过大鼠觅食行为实验，也在重庆市精神卫生中心协助过临床评估工作。">Before Wake Forest, I earned a B.S. in Psychology (Behavioral and Cognitive Neuroscience) at the University of Illinois Urbana-Champaign. Along the way I studied retinal ganglion cell degeneration at Harvard Medical School's Schepens Eye Research Institute, ran rodent foraging experiments at Illinois, and assisted with clinical assessment at the Chongqing Mental Health Center.</p>
+        </div>
+        <figure class="figure">
+          <svg viewBox="0 0 240 240" role="img" aria-labelledby="fig-title">
+            <title id="fig-title" data-zh="视觉搜索刺激：八个图形排成一圈。目光从中心移向菱形目标，跳过了洋红色的圆形。">A visual search display: eight shapes in a ring. The gaze moves from the center to the diamond target and skips the magenta circle.</title>
+            <!-- eye path to the distractor that did not happen -->
+            <line class="ghost" x1="120" y1="120" x2="44" y2="120"/>
+            <!-- eye path to the target -->
+            <line class="gaze-line" x1="120" y1="120" x2="176" y2="64"/>
+            <!-- ring of items: r = 80 around (120,120) -->
+            <circle class="item" cx="120" cy="40" r="14"/><line class="bar" x1="114" y1="40" x2="126" y2="40"/>
+            <polygon class="item target" points="176,46 194,64 176,82 158,64"/><line class="bar t" x1="176" y1="58" x2="176" y2="70"/>
+            <circle class="item" cx="200" cy="120" r="14"/><line class="bar" x1="200" y1="114" x2="200" y2="126"/>
+            <circle class="item" cx="176" cy="176" r="14"/><line class="bar" x1="170" y1="176" x2="182" y2="176"/>
+            <circle class="item" cx="120" cy="200" r="14"/><line class="bar" x1="120" y1="194" x2="120" y2="206"/>
+            <circle class="item" cx="64" cy="176" r="14"/><line class="bar" x1="58" y1="176" x2="70" y2="176"/>
+            <circle class="item distractor" cx="40" cy="120" r="14"/><line class="bar d" x1="34" y1="120" x2="46" y2="120"/>
+            <circle class="item" cx="64" cy="64" r="14"/><line class="bar" x1="64" y1="58" x2="64" y2="70"/>
+            <!-- fixation cross -->
+            <line class="fix" x1="114" y1="120" x2="126" y2="120"/><line class="fix" x1="120" y1="114" x2="120" y2="126"/>
+            <circle class="gaze-dot" cx="120" cy="120" r="6"/>
+          </svg>
+          <figcaption data-zh="请找出菱形。经过训练后，观察者的目光会直接跳过<b>颜色独特项</b>，尽管它通常会抓住注意力。我的研究关注这种抑制在什么情况下会失效。">Search for the diamond. A trained observer's eyes skip the <b>color singleton</b>, an item that would normally capture attention. My research asks when that suppression breaks down.</figcaption>
+        </figure>
+      </div>
+      <ul class="chips" aria-label="Research interests">
+        <li data-zh="视觉注意">Visual attention</li>
+        <li data-zh="习得性干扰抑制">Learned distractor suppression</li>
+        <li data-zh="威胁与焦虑">Threat and anxiety</li>
+        <li data-zh="眼动追踪与瞳孔测量">Eye tracking and pupillometry</li>
+        <li data-zh="姿态估计（SLEAP）">Pose estimation (SLEAP)</li>
+        <li data-zh="视网膜神经节细胞的表观遗传调控">Epigenetics of retinal ganglion cells</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="news-h">
+      <span class="label" id="news-h" data-zh="动态">News</span>
+      <ul class="news">
+        <li><span class="date" data-zh="2026.10">Oct 2026</span><span data-zh="搭建了 SLEAP 姿态追踪系统并训练出第一个模型，用于测量眼动任务中的不自主反应。">Set up a SLEAP pose-tracking pipeline and trained a first model, for measuring involuntary reactions during eye-tracking tasks.</span></li>
+        <li><span class="date" data-zh="2026.08">Aug 2026</span><span data-zh="开始在维克森林大学攻读实验与研究心理学硕士。">Started the M.S. program in Research and Experimental Psychology at Wake Forest University.</span></li>
+        <li><span class="date" data-zh="2026.05">May 2026</span><span data-zh="从伊利诺伊大学厄巴纳-香槟分校毕业，获心理学学士学位。">Graduated from the University of Illinois Urbana-Champaign with a B.S. in Psychology.</span></li>
+        <li><span class="date" data-zh="2025.12">Dec 2025</span><span data-zh="成为美国调查病理学会（ASIP）本科生会员。">Became an undergraduate member of the American Society for Investigative Pathology.</span></li>
+        <li><span class="date">2025</span><span data-zh="合著论文发表于 <i>Journal of Materials Chemistry C</i>。">Co-authored paper published in the <i>Journal of Materials Chemistry C</i>.</span></li>
+      </ul>
+    </section>
+
+    <section id="projects">
+      <span class="label" data-zh="当前项目">Current projects</span>
+      <h2 data-zh="进行中的研究">Research in progress</h2>
+
+      <article class="project">
+        <div class="project-head">
+          <div class="meta"><span class="status live" data-zh="设计阶段">In design</span><span data-zh="SLAP Lab，维克森林大学">SLAP Lab, Wake Forest University</span><span>2026–</span></div>
+          <h3 data-zh="焦虑对触发式抑制的影响：焦虑会破坏已经习得的抑制吗？">Anxiety's effect on triggered suppression: does anxiety disrupt suppression that has already been learned?</h3>
+        </div>
+        <div class="prose">
+          <p data-zh="注意并不只由目标和显著性决定，观察者的内部状态也会改变哪些刺激胜出。在触发式抑制范式（triggered suppression；Zhang &amp; Gaspelin, 2026）中，被试会学到某种颜色通常与任务无关，于是不再去看它。焦虑是检验这一点的好例子：它被研究得很充分，可以在伦理范围内诱发，而且最可能与抑制所依赖的控制资源发生竞争。本研究问的是：焦虑状态会不会削弱这种习得的抑制。">Attention is not governed by goals and salience alone: the observer's internal state also shapes which stimuli win. In the triggered suppression paradigm (Zhang &amp; Gaspelin, 2026), participants learn that one color is usually irrelevant and stop looking at it. Anxiety is a good test case. It is well studied, can be induced within ethical limits, and is the state most likely to compete for the control resources that suppression depends on. This study asks whether an anxious state weakens that learned suppression.</p>
+          <p data-zh="每位被试完成 12 个 block（每个 40 个试次）的视觉搜索任务，全程用眼动仪记录注视。在中性阶段，试次间隔中会播放无害的纯音；进入威胁阶段后，被试被告知随时可能出现令人不适的声音，随后不可预测的人类尖叫声（低于 70 dB，约占 6% 的试次）会取代纯音。纯音和尖叫按同一时间表出现，因此唯一变化的是威胁本身。主要指标是首次注视落在颜色独特项上的比例；在 8 个刺激的搜索阵列中，随机水平为 12.5%。">Each participant completes 12 blocks of 40 visual search trials while an eye tracker records their gaze. In the neutral phase they hear harmless tones between trials. In the threat phase they are told an unpleasant sound may occur at any time, and unpredictable human screams (below 70 dB, about 6% of trials) replace the tones. Tones and screams follow the same schedule, so the only thing that changes is threat. The main measure is the share of first fixations that land on the color singleton; with 8 items in the array, chance is 12.5%.</p>
+        </div>
+        <div class="blocks" aria-label="Session design: blocks 1 to 6 neutral, blocks 7 to 12 threat; blocks 5–6 are compared with blocks 7–8.">
+          <div class="strip">
+            <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div><div class="cell">4</div>
+            <div class="cell key">5</div><div class="cell key">6</div>
+            <div class="cell threat key">7</div><div class="cell threat key">8</div>
+            <div class="cell threat">9</div><div class="cell threat">10</div><div class="cell threat">11</div><div class="cell threat">12</div>
+          </div>
+          <div class="strip-legend">
+            <span data-zh="Block 1–6：中性纯音，习得抑制">Blocks 1–6: neutral tones, suppression is learned</span>
+            <span data-zh="Block 7–12：尖叫威胁">Blocks 7–12: threat of scream</span>
+            <span data-zh="加框：主要比较">Outlined: primary comparison</span>
+          </div>
+        </div>
+        <ol class="pipeline trial" aria-label="Sequence of a sound trial">
+          <li data-zh="<b>搜索阵列</b>直到作答（最长 3 秒）"><b>Search array</b>Until response (3 s max)</li>
+          <li data-zh="<b>延迟</b>600–1,500 ms"><b>Delay</b>600–1,500 ms</li>
+          <li data-zh="<b>声音</b>中性：纯音 55–60 dB<br>威胁：尖叫 &lt; 70 dB"><b>Sound</b>Neutral: tone, 55–60 dB<br>Threat: scream, &lt; 70 dB</li>
+          <li data-zh="<b>恢复期</b>3–5 秒，然后进入下一试次"><b>Recovery</b>3–5 s, then next trial</li>
+        </ol>
+        <ul class="tags">
+          <li data-zh="触发式抑制">Triggered suppression</li><li data-zh="眼动追踪">Eye tracking</li><li data-zh="视觉搜索">Visual search</li><li data-zh="尖叫威胁范式">Threat of scream</li><li data-zh="被试内设计">Within-subject</li><li data-zh="STAI 筛查">STAI screening</li>
+        </ul>
+      </article>
+
+      <article class="project">
+        <div class="project-head">
+          <div class="meta"><span class="status live" data-zh="流程搭建中">Pipeline setup</span><span data-zh="上述研究的附加项目">Add-on to the study above</span><span data-zh="2026.10–">Oct 2026–</span></div>
+          <h3 data-zh="用 SLEAP 从摄像头视频中测量不自主的惊跳反应">Measuring involuntary startle reactions from webcam video with SLEAP</h3>
+        </div>
+        <div class="prose">
+          <p data-zh="眼动仪只能看到眼睛，看不到肩膀、面部和手，而惊跳反应恰恰在这些部位最明显。任务过程中用摄像头记录被试的上半身，再用 SLEAP 逐帧追踪关键点。对每一次纯音或尖叫，我测量之后 1–2 秒内的动作幅度、眨眼，以及恢复到基线所需的时间。">The eye tracker sees the eyes but not the shoulders, face or hands, which is where a startle shows up most. A webcam records the upper body during the task, and SLEAP tracks keypoints frame by frame. For each tone or scream I measure movement in the 1–2 seconds afterward, blinks, and time to return to baseline.</p>
+          <p data-zh="这提供了一个不打断任务的客观操纵检验，也能看出反应在威胁阶段中是否逐渐习惯化，以及强烈反应之后的试次是否出现更多的干扰物捕获。视频指标会用眼动仪记录的瞳孔扩张和眨眼数据进行验证。">This gives an objective manipulation check that does not interrupt the task. It also shows whether reactions habituate across the threat phase, and whether trials with a strong reaction are followed by more distractor capture. The video measure is validated against pupil dilation and blinks from the eye tracker.</p>
+        </div>
+        <ol class="pipeline" aria-label="Analysis pipeline">
+          <li data-zh="<b>录制</b>摄像头通过屏幕闪光与试次同步"><b>Record</b>Webcam synced to trials by a screen flash</li>
+          <li data-zh="<b>追踪</b>SLEAP 标记面部与肩部关键点"><b>Track</b>SLEAP keypoints on face and shoulders</li>
+          <li data-zh="<b>对齐</b>Python：将关键点与试次和声音时间对齐"><b>Align</b>Python: match keypoints to trial and sound times</li>
+          <li data-zh="<b>建模</b>R：反应与捕获的混合效应模型"><b>Model</b>R: mixed-effects models of reaction and capture</li>
+        </ol>
+        <figure class="chart-fig">
+          <figcaption class="chart-head">
+            <span class="chart-title" data-zh="第一个练习模型：关键点准确率（PCK@5）">First practice model: keypoint accuracy (PCK@5)</span>
+            <span class="chart-sub" data-zh="2026 年 10 月 19 日 · single-instance 模型 · σ = 5 · 21 帧标注 · 按训练 epoch">Oct 19, 2026 · single-instance model · σ = 5 · 21 labeled frames · by training epoch</span>
+          </figcaption>
+          <div class="chart" id="pck-chart">
+            <svg viewBox="-22 0 422 208" role="img" aria-label="PCK@5 rises from 5% at epoch 3 to 68% at epoch 8.">
+              <g class="grid">
+                <line x1="32" x2="356" y1="10" y2="10"/><line x1="32" x2="356" y1="47.5" y2="47.5"/>
+                <line x1="32" x2="356" y1="85" y2="85"/><line x1="32" x2="356" y1="122.5" y2="122.5"/>
+              </g>
+              <line class="baseline" x1="32" x2="356" y1="160" y2="160"/>
+              <g class="ytick">
+                <text x="26" y="13">100%</text><text x="26" y="88">50%</text><text x="26" y="163">0%</text>
+              </g>
+              <g class="xtick">
+                <text x="32" y="178">3</text><text x="96.8" y="178">4</text><text x="161.6" y="178">5</text>
+                <text x="226.4" y="178">6</text><text x="291.2" y="178">7</text><text x="356" y="178">8</text>
+              </g>
+              <text class="axis-title" x="194" y="202" text-anchor="middle" data-zh="训练轮次（epoch）">Training epoch</text>
+              <text class="axis-title" transform="translate(-12 85) rotate(-90)" text-anchor="middle" data-zh="准确率（PCK@5）">Accuracy (PCK@5)</text>
+              <polyline class="series" points="32,153.2 96.8,98.6 161.6,85 226.4,71.4 291.2,64.5 356,57.7"/>
+              <g class="pts"></g>
+              <text class="end-label" x="42" y="157" text-anchor="start">5%</text>
+              <text class="end-label" x="364" y="61">68%</text>
+            </svg>
+            <div class="tip" id="pck-tip" hidden></div>
+          </div>
+          <p class="chart-note" data-zh="PCK@5：验证集中与人工标注相差不超过 5 像素的关键点比例。Epoch 0–2 还没有有效预测。验证集很小（22 个关键点），所以这只是检验流程能跑通，不代表最终准确率。">PCK@5 is the share of validation keypoints placed within 5 px of the hand label. Epochs 0–2 produced no valid predictions. The validation set is small (22 keypoints), so this checks that the pipeline works; it is not a benchmark.</p>
+          <details class="abstract chart-data">
+            <summary data-zh="查看数据">Show data</summary>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th data-zh="Epoch">Epoch</th><th>PCK@5</th><th>mOKS</th><th>mAP</th><th data-zh="验证损失">Val. loss</th></tr></thead>
+                <tbody>
+                  <tr><td>3</td><td>0.045</td><td>0.167</td><td>0.000</td><td>1.0e-3</td></tr>
+                  <tr><td>4</td><td>0.409</td><td>0.598</td><td>0.225</td><td>6.2e-4</td></tr>
+                  <tr><td>5</td><td>0.500</td><td>0.732</td><td>0.525</td><td>4.4e-4</td></tr>
+                  <tr><td>6</td><td>0.591</td><td>0.806</td><td>0.700</td><td>2.8e-4</td></tr>
+                  <tr><td>7</td><td>0.636</td><td>0.833</td><td>0.725</td><td>2.2e-4</td></tr>
+                  <tr><td>8</td><td>0.682</td><td>0.859</td><td>0.751</td><td>2.0e-4</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </figure>
+        <p class="affil" data-zh="<b>进展：</b>2026 年 10 月，SLEAP 已在本地 GPU 上完成安装和测试，并用我自己的练习视频训练出第一个 single-instance 关键点模型。下一步是加入更多志愿者的视频，让模型能适应不同的面孔和体型，然后用试点数据搭建完整流程，包括时间同步。"><b>Progress:</b> In October 2026 SLEAP was installed and tested on a local GPU, and a first single-instance keypoint model was trained on practice video of myself. Next is adding video from more volunteers so the model generalizes across faces and body shapes, then building the full pipeline, including timing sync, on pilot data.</p>
+        <ul class="tags">
+          <li>SLEAP</li><li data-zh="姿态估计">Pose estimation</li><li>Python</li><li>R</li><li data-zh="瞳孔测量">Pupillometry</li>
+        </ul>
+      </article>
+    </section>
+
+    <section id="publications">
+      <span class="label" data-zh="发表论文">Publications</span>
+      <h2 data-zh="论文与稿件">Papers and manuscripts</h2>
+      <ol class="pubs">
+        <li class="pub">
+          <p class="pub-title">Machine learning–driven soft plasma etching for precision structuring of biofunctional organic semiconductor films</p>
+          <p class="pub-venue"><i>Journal of Materials Chemistry C</i>, Royal Society of Chemistry, 2025</p>
+          <div class="pub-tags"><span class="pill pub-ok" data-zh="已发表">Published</span><span class="pill" data-zh="合著者">Co-author</span><a href="https://doi.org/10.1039/D5TC02791H">doi:10.1039/D5TC02791H</a></div>
+        </li>
+        <li class="pub">
+          <p class="pub-title">Differential associations of proximal relationships with depression, anxiety, and stress in adolescents: A combined network analysis and restricted cubic spline study</p>
+          <p class="pub-venue"><i>Child and Adolescent Psychiatry and Mental Health</i> (Springer Nature)</p>
+          <div class="pub-tags"><span class="pill" data-zh="审稿中">Under review</span><span class="pill" data-zh="合著者">Co-author</span></div>
+        </li>
+        <li class="pub">
+          <p class="pub-title">Neurohumoral marker detection sensors: Integration from molecular recognition to intelligent diagnosis and treatment</p>
+          <p class="pub-venue"><i>Advanced Materials</i></p>
+          <div class="pub-tags"><span class="pill" data-zh="审稿中">Under review</span><span class="pill" data-zh="合著者">Co-author</span></div>
+        </li>
+        <li class="pub">
+          <p class="pub-title">Epigenetic regulation of retinal ganglion cell degeneration and regeneration: Mechanisms and therapeutic insights</p>
+          <p class="authors"><b>Zile Zhao</b>, Ke Li, Lingxuan He, Ming Yuan, Ajay Ashok, Dongfeng Chen*</p>
+          <p class="pub-venue" data-zh="综述文章 · Schepens 眼科研究所，哈佛医学院">Review article · Schepens Eye Research Institute, Harvard Medical School</p>
+          <div class="pub-tags"><span class="pill" data-zh="准备中">In preparation</span><span class="pill first" data-zh="第一作者">First author</span></div>
+          <details class="abstract">
+            <summary data-zh="摘要">Abstract</summary>
+            <p>Retinal ganglion cells (RGCs) are the output neurons of the retina and carry visual signals to the brain. Their degeneration is a key pathological feature of glaucoma and optic neuropathies. Emerging evidence suggests that epigenetic regulation, including DNA methylation and demethylation and histone acetylation and deacetylation, plays a pivotal role in both RGC degeneration and regeneration. We first examine how epigenetic modifications contribute to RGC degeneration through three pathological processes: apoptosis, inflammation and oxidative stress. DNA methyltransferases (DNMTs), TET dioxygenases, histone acetyltransferases (HATs) and histone deacetylases (HDACs) regulate these pathways by altering gene expression and chromatin accessibility. We then explore how epigenetic remodeling supports regeneration, highlighting the therapeutic potential of HDAC inhibitors and TET-mediated demethylation for axonal regrowth. Finally, we discuss how inflammation and oxidative stress influence epigenetic enzyme activity, disrupting the crosstalk between methylation and demethylation. Together, these findings show the dynamic roles of epigenetic mechanisms in governing RGC fate and suggest new targets for neuroprotective and regenerative therapies.</p>
+          </details>
+        </li>
+      </ol>
+    </section>
+
+    <section id="posters">
+      <span class="label" data-zh="学术海报">Posters</span>
+      <h2 data-zh="学术海报">Research posters</h2>
+      <article class="poster">
+        <button class="poster-thumb" type="button" id="poster-open" aria-label="View the full poster">
+          <img src="poster-epigenetics-thumb.jpg" alt="Poster: Epigenetic Interactions in RGC Fate" width="960" height="720" loading="lazy">
+        </button>
+        <div class="poster-body">
+          <h3>Epigenetic interactions in RGC fate: Linking degeneration and regeneration</h3>
+          <p class="authors"><b>Zile Zhao</b><sup>1,3</sup>, Lingxuan He<sup>1,3</sup>, Ke Li<sup>2</sup>, Ming Yuan<sup>1</sup>, Ajay Ashok<sup>3</sup>, Dongfeng Chen<sup>3</sup>*</p>
+          <p class="affil"><sup>1</sup>University of Illinois Urbana-Champaign · <sup>2</sup>The Hong Kong Polytechnic University · <sup>3</sup>Schepens Eye Research Institute, Mass Eye and Ear, Harvard Medical School</p>
+          <div class="pub-tags"><span class="pill" data-zh="综述海报">Review poster</span><span class="pill" data-zh="尚未展示">Not yet presented</span><span class="pill first" data-zh="第一作者">First author</span></div>
+          <details class="abstract">
+            <summary data-zh="摘要">Abstract</summary>
+            <p>Retinal ganglion cells (RGCs) are the output neurons of the retina and are essential for transmitting visual information to the brain. Their degeneration is a major pathological feature of glaucoma and optic neuropathies, while their limited regenerative capacity remains a central obstacle in optic nerve repair. This review poster summarizes how key epigenetic regulators, including DNMTs, TET enzymes, HATs and HDACs, contribute to RGC degeneration through apoptosis, neuroinflammation, oxidative stress and redox imbalance. It also highlights how epigenetic remodeling may support regeneration by altering chromatin accessibility and reactivating growth-associated gene programs. Finally, we discuss interactions among epigenetic pathways, emphasizing that RGC fate is shaped not by isolated enzymes but by dynamic crosstalk between methylation, demethylation and histone modification.</p>
+          </details>
+        </div>
+      </article>
+    </section>
+
+    <section id="experience">
+      <span class="label" data-zh="研究经历">Research experience</span>
+      <h2 data-zh="实验室与临床经历">Labs and clinics</h2>
+      <ul class="timeline">
+        <li>
+          <span class="date" data-zh="2026 至今">2026–present</span>
+          <div>
+            <h3 data-zh="研究生研究员，SLAP Lab">Graduate Researcher, SLAP Lab</h3>
+            <p class="where" data-zh="维克森林大学 · 导师：Brad Stilwell 博士">Wake Forest University · PI: Dr. Brad Stilwell</p>
+            <ul>
+              <li data-zh="开展显著干扰物抑制的眼动实验。">Running eye-tracking experiments on salient distractor suppression.</li>
+              <li data-zh="设计一项研究，考察表现压力和威胁如何影响习得的干扰回避，以及视觉工作记忆对注意的引导。">Designing a study of how performance pressure and threat affect learned distractor avoidance and attention guidance by visual working memory.</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <span class="date" data-zh="2025.08 – 2026.05">Aug 2025 – May 2026</span>
+          <div>
+            <h3 data-zh="研究助理，行为神经科学实验室">Research Assistant, Behavioral Neuroscience Laboratory</h3>
+            <p class="where" data-zh="伊利诺伊大学厄巴纳-香槟分校 · 导师：James Hinman 博士">University of Illinois Urbana-Champaign · PI: Dr. James Hinman</p>
+            <ul>
+              <li data-zh="对 11 只大鼠开展 patch-leaving 觅食任务，并按 IACUC 规范负责健康监测。">Ran a patch-leaving foraging task with a cohort of 11 rats and managed their health monitoring under IACUC protocols.</li>
+              <li data-zh="手动修正 3,500 多帧 SLEAP 姿态估计数据，纠正系统性追踪错误。">Refined SLEAP pose estimation by hand-correcting more than 3,500 frames to fix systematic tracking errors.</li>
+              <li data-zh="在电生理记录后进行经心灌注、脑切片和尼氏染色，验证电极位置。">Performed transcardial perfusions, brain sectioning and Nissl staining to verify electrode placement after electrophysiology.</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <span class="date" data-zh="2025.05 – 2025.08">May – Aug 2025</span>
+          <div>
+            <h3 data-zh="研究助理，Chen 实验室">Research Assistant, Chen Lab</h3>
+            <p class="where" data-zh="哈佛医学院 Schepens 眼科研究所 · 导师：Dongfeng Chen 博士">Schepens Eye Research Institute, Harvard Medical School · PI: Dr. Dongfeng Chen</p>
+            <ul>
+              <li data-zh="研究 HDAC2 在视网膜神经节细胞退化和中枢神经轴突再生中的作用，为青光眼治疗提供参考。">Studied the role of HDAC2 in retinal ganglion cell degeneration and CNS axon regeneration, with implications for glaucoma.</li>
+              <li data-zh="对 HDAC2 敲除小鼠进行基因分型；完成视网膜解剖、切片、RNA 提取、cDNA 合成和 qPCR。">Genotyped HDAC2 knockout mice; performed retinal dissection, sectioning, RNA isolation, cDNA synthesis and qPCR.</li>
+              <li data-zh="协助一项关于脑和视网膜中 β-淀粉样蛋白的研究，检验视觉功能下降能否作为阿尔茨海默病的早期无创标志物。">Assisted a project on β-amyloid in brain and retina, testing visual decline as an early non-invasive marker of Alzheimer's disease.</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <span class="date" data-zh="2024.12 – 2025.01">Dec 2024 – Jan 2025</span>
+          <div>
+            <h3 data-zh="临床心理师助理">Clinical Psychologist Assistant</h3>
+            <p class="where" data-zh="重庆市精神卫生中心">Chongqing Mental Health Center, China</p>
+            <ul>
+              <li data-zh="实施 SAS、SDS 和 SCL-90 量表筛查，处理 100 多份评估数据并生成风险等级报告。">Administered SAS, SDS and SCL-90 screenings and processed data from more than 100 assessments into risk-level reports.</li>
+              <li data-zh="维护保密的来访者档案，协助团体辅导活动。">Maintained confidential client records and supported group counseling sessions.</li>
+            </ul>
+          </div>
+        </li>
+        <li>
+          <span class="date" data-zh="2023.06 – 2023.08">Jun – Aug 2023</span>
+          <div>
+            <h3 data-zh="眼视光跟岗见习">Optometry Shadowing</h3>
+            <p class="where" data-zh="重庆西南医院">Southwest Hospital, Chongqing, China</p>
+            <ul>
+              <li data-zh="协助 LASIK、FS-LASIK 和 SMILE 术前筛查，包括眼压和角膜厚度测量。">Assisted pre-surgical screening for LASIK, FS-LASIK and SMILE, including intraocular pressure and corneal thickness measurement.</li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section id="teaching">
+      <span class="label" data-zh="教学">Teaching</span>
+      <h2 data-zh="助教">Teaching assistant</h2>
+      <ul class="timeline">
+        <li>
+          <span class="date" data-zh="2026 至今">2026–present</span>
+          <div>
+            <h3 data-zh="维克森林大学心理学系">Department of Psychology, Wake Forest University</h3>
+            <ul>
+              <li data-zh="<b>PSY 338 情绪心理学：</b>批改作业并给学生反馈。"><b>PSY 338, Psychology of Emotion:</b> grading and student feedback.</li>
+              <li data-zh="<b>PSY 385 心理学实习：</b>制定评分标准，起草讲课幻灯片和讲稿。"><b>PSY 385, Internship in Psychology:</b> building rubrics and drafting lecture slides and scripts.</li>
+              <li data-zh="<b>Mass Testing：</b>通过 Qualtrics 和 SONA 收集问卷数据。"><b>Mass Testing:</b> collecting questionnaire data through Qualtrics and SONA.</li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section id="education">
+      <span class="label" data-zh="教育背景">Education</span>
+      <h2 data-zh="学位与荣誉">Degrees and honors</h2>
+      <ul class="timeline">
+        <li>
+          <span class="date" data-zh="2026 至今">2026–present</span>
+          <div>
+            <h3 data-zh="理学硕士，实验与研究心理学">M.S., Research and Experimental Psychology</h3>
+            <p class="where" data-zh="维克森林大学 · 行为与认知神经科学方向">Wake Forest University · Behavioral and cognitive neuroscience focus</p>
+          </div>
+        </li>
+        <li>
+          <span class="date">2022 – 2026</span>
+          <div>
+            <h3 data-zh="理学学士，心理学">B.S., Psychology</h3>
+            <p class="where" data-zh="伊利诺伊大学厄巴纳-香槟分校 · 行为与认知神经科学方向">University of Illinois Urbana-Champaign · Behavioral and cognitive neuroscience focus</p>
+            <ul>
+              <li data-zh="专业 GPA 3.94 / 4.0；2023–24 和 2024–25 学年院长荣誉榜（Dean's List）。">Major GPA 3.94 / 4.0; Dean's List 2023–24 and 2024–25.</li>
+              <li data-zh="获美国调查病理学会 2,400 美元研究资助，研究青光眼与脑-眼关系。">$2,400 research grant from the American Society for Investigative Pathology for work on glaucoma and the brain–eye relationship.</li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section id="skills">
+      <span class="label" data-zh="技能">Skills</span>
+      <h2 data-zh="方法与工具">Methods and tools</h2>
+      <div class="two">
+        <dl class="kv">
+          <div><dt data-zh="人类被试研究">Human research</dt><dd data-zh="眼动追踪、实验设计、视觉搜索范式、问卷数据收集（Qualtrics、SONA）">Eye tracking, experimental design, visual search paradigms, questionnaire data collection (Qualtrics, SONA)</dd></div>
+          <div><dt data-zh="湿实验">Wet lab</dt><dd data-zh="PCR、qPCR、Western blot、DNA/RNA 提取、视网膜神经节细胞分离、视网膜外植体培养">PCR, qPCR, Western blot, DNA/RNA isolation, retinal ganglion cell isolation, retina explant</dd></div>
+          <div><dt data-zh="动物实验">Animal research</dt><dd data-zh="大鼠抓取与行为训练、灌注手术、脑切片与贴片、尼氏染色">Rat handling and behavioral training, perfusion surgery, brain slicing and mounting, Nissl staining</dd></div>
+        </dl>
+        <dl class="kv">
+          <div><dt data-zh="计算工具">Computation</dt><dd>Python, MATLAB, R, SPSS, SLEAP</dd></div>
+          <div><dt data-zh="语言">Languages</dt><dd data-zh="普通话（母语）、英语（接近母语）、日语（流利）、德语（流利）">Mandarin (native), English (near-native), Japanese (fluent), German (fluent)</dd></div>
+          <div><dt data-zh="学会会员">Memberships</dt><dd data-zh="美国调查病理学会（ASIP）">American Society for Investigative Pathology</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <footer data-zh="最后更新：2026 年 10 月。">Last updated October 2026.</footer>
+  </main>
+</div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Full poster" hidden>
+  <button class="lightbox-close" id="lightbox-close" type="button" data-zh="关闭">Close</button>
+  <img id="lightbox-img" alt="Full poster: Epigenetic Interactions in RGC Fate">
+</div>
+
+<script>
+(function () {
+  var lang = 'en';
+  var copyText = {
+    en: { copied: 'Copied', selected: 'Selected' },
+    zh: { copied: '已复制', selected: '已选中' }
+  };
+
+  // Each element keeps its English in data-en the first time we switch away from it.
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-zh]'));
+  nodes.forEach(function (n) { n.setAttribute('data-en', n.innerHTML); });
+  var portrait = document.querySelector('.portrait');
+  var portraitAlt = { en: portrait.alt, zh: portrait.getAttribute('data-zh-alt') };
+  var toggle = document.getElementById('lang-toggle');
+
+  function setLang(next) {
+    lang = next;
+    nodes.forEach(function (n) {
+      n.innerHTML = n.getAttribute(next === 'zh' ? 'data-zh' : 'data-en');
+    });
+    portrait.alt = portraitAlt[next];
+    document.documentElement.lang = next === 'zh' ? 'zh-CN' : 'en';
+    toggle.textContent = next === 'zh' ? 'English' : '中文';
+    toggle.setAttribute('lang', next === 'zh' ? 'en' : 'zh');
+    toggle.setAttribute('aria-label', next === 'zh' ? 'Switch to English' : '切换到中文');
+    try { localStorage.setItem('lang', next); } catch (e) {}
+  }
+
+  toggle.addEventListener('click', function () { setLang(lang === 'zh' ? 'en' : 'zh'); });
+
+  // PCK@5 chart: points with a hover/focus tooltip.
+  (function () {
+    var data = [
+      { e: 3, pck: 0.0455, oks: 0.1673, x: 32, y: 153.2 },
+      { e: 4, pck: 0.4091, oks: 0.5979, x: 96.8, y: 98.6 },
+      { e: 5, pck: 0.5000, oks: 0.7320, x: 161.6, y: 85 },
+      { e: 6, pck: 0.5909, oks: 0.8056, x: 226.4, y: 71.4 },
+      { e: 7, pck: 0.6364, oks: 0.8327, x: 291.2, y: 64.5 },
+      { e: 8, pck: 0.6818, oks: 0.8585, x: 356, y: 57.7 }
+    ];
+    var wrap = document.getElementById('pck-chart');
+    var svg = wrap.querySelector('svg');
+    var g = svg.querySelector('.pts');
+    var tip = document.getElementById('pck-tip');
+    var NS = 'http://www.w3.org/2000/svg';
+    data.forEach(function (d) {
+      var hit = document.createElementNS(NS, 'circle');
+      hit.setAttribute('class', 'hit'); hit.setAttribute('cx', d.x); hit.setAttribute('cy', d.y); hit.setAttribute('r', 14);
+      hit.setAttribute('tabindex', '0');
+      var pt = document.createElementNS(NS, 'circle');
+      pt.setAttribute('class', 'pt'); pt.setAttribute('cx', d.x); pt.setAttribute('cy', d.y); pt.setAttribute('r', 4);
+      g.appendChild(hit); g.appendChild(pt);
+      function show() {
+        var zh = lang === 'zh';
+        tip.innerHTML = (zh ? 'Epoch ' : 'Epoch ') + d.e + '<br>PCK@5 ' + Math.round(d.pck * 100) + '%<br>mOKS ' + d.oks.toFixed(2);
+        var box = svg.getBoundingClientRect(), wb = wrap.getBoundingClientRect();
+        var s = box.width / 422;
+        tip.style.left = (box.left - wb.left + (d.x + 22) * s) + 'px';
+        tip.style.top = (box.top - wb.top + d.y * s) + 'px';
+        tip.hidden = false; pt.classList.add('on');
+      }
+      function hide() { tip.hidden = true; pt.classList.remove('on'); }
+      hit.addEventListener('mouseenter', show); hit.addEventListener('focus', show);
+      hit.addEventListener('mouseleave', hide); hit.addEventListener('blur', hide);
+    });
+  })();
+
+  // Poster lightbox: the full-size image loads only when opened.
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = document.getElementById('lightbox-img');
+  var posterBtn = document.getElementById('poster-open');
+  var closeBtn = document.getElementById('lightbox-close');
+  function closeLightbox() { lightbox.hidden = true; posterBtn.focus(); }
+  posterBtn.addEventListener('click', function () {
+    if (!lightboxImg.src) lightboxImg.src = 'poster-epigenetics.jpg';
+    lightbox.hidden = false;
+    closeBtn.focus();
+  });
+  closeBtn.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !lightbox.hidden) closeLightbox(); });
+
+  var saved = null;
+  try { saved = localStorage.getItem('lang'); } catch (e) {}
+  if (saved === 'zh') setLang('zh');
+
+  document.querySelectorAll('[data-copy]').forEach(function (btn) {
+    var email = document.getElementById(btn.getAttribute('data-copy'));
+    btn.addEventListener('click', function () {
+      var text = email.textContent.trim();
+      function selectIt() {
+        var r = document.createRange(); r.selectNodeContents(email);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        btn.textContent = copyText[lang].selected;
+      }
+      try {
+        navigator.clipboard.writeText(text).then(function () { btn.textContent = copyText[lang].copied; }, selectIt);
+      } catch (e) { selectIt(); }
+      setTimeout(function () { btn.innerHTML = btn.getAttribute(lang === 'zh' ? 'data-zh' : 'data-en'); }, 1800);
+    });
+  });
+})();
+</script>
+</html>
